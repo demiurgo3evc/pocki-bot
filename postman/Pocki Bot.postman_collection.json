@@ -1,0 +1,77 @@
+{
+  "info": {
+    "_postman_id": "865cd906-734f-4252-a0c9-2e005cfbc12e",
+    "name": "Pocki Bot",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51584150"
+  },
+  "item": [
+    {
+      "name": "GET Verify Webhook",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/webhook?hub.mode=subscribe&hub.verify_token=pocki_secret&hub.challenge=956763127528416",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "webhook"
+          ],
+          "query": [
+            {
+              "key": "hub.mode",
+              "value": "subscribe"
+            },
+            {
+              "key": "hub.verify_token",
+              "value": "pocki_secret"
+            },
+            {
+              "key": "hub.challenge",
+              "value": "956763127528416"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST Webhook Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"object\": \"whatsapp_business_account\",\r\n  \"entry\": [\r\n    {\r\n      \"changes\": [\r\n        {\r\n          \"value\": {\r\n            \"messages\": [\r\n              {\r\n                \"from\": \"573146588539\",\r\n                \"text\": {\r\n                  \"body\": \"precio del dolar\"\r\n                }\r\n              }\r\n            ]\r\n          }\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/webhook",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "webhook"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
