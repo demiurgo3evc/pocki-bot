@@ -1,98 +1,278 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+# Pocki WhatsApp Bot
+
+Bot de WhatsApp desarrollado con **NestJS** que utiliza **WhatsApp Cloud API** para recibir mensajes mediante **webhooks** y responder automáticamente usando servicios de IA como **OpenAI** o **Groq**.
+
+---
+
+# Arquitectura
+
+```
+Usuario (WhatsApp)
+        │
+        ▼
+WhatsApp Cloud API (Meta)
+        │
+        ▼
+Webhook (/webhook)
+        │
+        ▼
+NestJS Controller
+        │
+        ▼
+Services (messages / openai)
+        │
+        ▼
+Respuesta enviada al usuario
+```
+
+---
+
+# Requisitos
+
+Antes de ejecutar el proyecto debes tener instalado:
+
+* Node.js 18 o superior
+* npm
+* ngrok
+* cuenta en **Meta Developers**
+* acceso a **WhatsApp Cloud API**
+* PostgreSQL
+
+---
+
+# 1. Clonar el proyecto
+
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd pocki-bot
+```
+
+---
+
+# 2. Instalar dependencias
+
+```bash
+npm install
+```
+
+---
+
+# 3. Crear archivo `.env`
+
+Este proyecto requiere un archivo `.env` en la raíz del proyecto.
+
+Ejemplo:
+
+```
+WHATSAPP_TOKEN=
+WHATSAPP_VERIFY_TOKEN=
+WHATSAPP_PHONE_ID=
+
+# OpenAI
+OPENAI_API_KEY=
+
+# Groq
+GROQ_API_KEY=
+
+# Base de datos
+DB_HOST=
+DB_PORT=
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
+```
+
+---
+
+## Descripción de variables
+
+| Variable              | Descripción                            |
+| --------------------- | --------------------------------------- |
+| WHATSAPP_TOKEN        | Token generado en Meta Developers       |
+| WHATSAPP_VERIFY_TOKEN | Token usado para validar el webhook     |
+| WHATSAPP_PHONE_ID     | Phone Number ID del número de WhatsApp |
+| OPENAI_API_KEY        | API Key de OpenAI                       |
+| GROQ_API_KEY          | API Key del servicio Groq               |
+| DB_HOST               | Host de la base de datos                |
+| DB_PORT               | Puerto de la base de datos              |
+| DB_USER               | Usuario de la base de datos             |
+| DB_PASSWORD           | Contraseña de la base de datos         |
+| DB_NAME               | Nombre de la base de datos              |
+
+---
+
+# 4. Ejecutar el proyecto
+
+```bash
+npm run start:dev
+```
+
+El servidor se ejecutará en:
+
+```
+http://localhost:3000
+```
+
+---
+
+# 5. Exponer el servidor con ngrok
+
+WhatsApp necesita acceder a tu servidor mediante **HTTPS**.
+
+Ejecuta:
+
+```bash
+ngrok http 3000
+```
+
+Obtendrás una URL como:
+
+```
+https://xxxxx.ngrok-free.app
+```
+
+---
+
+# 6. Configurar Webhook en Meta
+
+Ir a:
+
+```
+Meta Developers → WhatsApp → Configuration → Webhooks
+```
+
+Configurar:
+
+**Callback URL**
+
+```
+https://xxxxx.ngrok-free.app/webhook
+```
+
+**Verify Token**
+
+```
+pocki_secret
+```
+
+Luego suscribir el evento:
+
+```
+messages
+```
+
+---
+
+# 7. Probar el bot
+
+1. Abre WhatsApp
+2. Envía un mensaje al número de prueba configurado en Meta
+3. El webhook recibirá el mensaje
+4. El bot responderá automáticamente
+
+---
+
+# Endpoint del Webhook
+
+Meta enviará eventos a:
+
+```
+POST /webhook
+```
+
+Verificación del webhook:
+
+```
+GET /webhook
+```
+
+---
+
+# Estructura del proyecto
+
+```
+src
+│
+├── messages
+│   ├── message.entity.ts
+│   ├── messages.module.ts
+│   └── messages.service.ts
+│
+├── openai
+│   ├── openai.module.ts
+│   └── openai.service.ts
+│
+├── whatsapp
+│   ├── whatsapp.controller.ts
+│   ├── whatsapp.module.ts
+│   └── whatsapp.service.ts
+│
+├── app.module.ts
+└── main.ts
+```
+
+---
+
+# Descripción de módulos
+
+### whatsapp
+
+Módulo encargado de la integración con **WhatsApp Cloud API**.
+
+* recibe mensajes desde el webhook
+* envía respuestas al usuario
+
+### messages
+
+Módulo encargado de manejar la lógica de mensajes y su persistencia.
+
+### openai
+
+Módulo encargado de la integración con **OpenAI / Groq** para generar respuestas inteligentes.
+
+---
+
+# Flujo del bot
+
+1. El usuario envía un mensaje por WhatsApp.
+2. WhatsApp Cloud API envía el evento al webhook.
+3. NestJS recibe el evento en `/webhook`.
+4. El servicio procesa el mensaje.
+5. Se consulta IA si es necesario.
+6. Se genera una respuesta.
+7. El bot responde al usuario.
+
+---
+
+# Scripts disponibles
+
+```bash
+npm run start
+npm run start:dev
+npm run start:prod
+npm run build
+npm run test
+```
+
+---
+
+# Tecnologías usadas
+
+* NestJS
+* TypeScript
+* Axios
+* WhatsApp Cloud API
+* OpenAI
+* Groq
+* PostgreSQL
+* ngrok
+
+---
+
+# Licencia
+
+MIT
+`<p align="center">`
+  `<a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" />``</a>`
+
 </p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
-```
-
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
