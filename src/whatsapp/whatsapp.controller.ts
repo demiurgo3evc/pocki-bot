@@ -18,23 +18,23 @@ export class WhatsappController {
     const isValid = this.whatsappService.verifyToken(mode, token, challenge)
 
     if (isValid) {
-      this.logger.log('✅ Webhook verificado')
+      this.logger.log('Webhook verificado')
       return res.status(200).send(challenge)
     }
 
-    this.logger.warn('❌ Token inválido en verificación')
+    this.logger.warn('Token inválido en verificación')
     return res.status(403).send('Token inválido')
   }
 
   @Post()
   async receiveMessage(@Body() body: any) {
-    this.logger.log(`📥 WEBHOOK BODY: ${JSON.stringify(body)}`)
+    this.logger.log(`WEBHOOK BODY: ${JSON.stringify(body)}`)
 
     try {
       await this.whatsappService.handleMessage(body)
       return { status: 'ok' }
     } catch (error) {
-      this.logger.error('❌ Error procesando webhook', error)
+      this.logger.error('Error procesando webhook', error)
       return { status: 'error' }
     }
   }

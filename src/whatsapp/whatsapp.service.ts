@@ -19,10 +19,10 @@ export class WhatsappService {
   verifyToken(mode: string, token: string, challenge: string): boolean {
     const verifyToken = this.config.get('WHATSAPP_VERIFY_TOKEN')
     if (mode === 'subscribe' && token === verifyToken) {
-      this.logger.log('✅ Webhook verificado correctamente')
+      this.logger.log('Webhook verificado correctamente')
       return true
     }
-    this.logger.warn('❌ Token de verificación inválido')
+    this.logger.warn('Token de verificación inválido')
     return false
   }
 
@@ -38,7 +38,7 @@ export class WhatsappService {
 
     if (!text) return
 
-    this.logger.log(`📩 Mensaje de ${from}: ${text}`)
+    this.logger.log(`Mensaje de ${from}: ${text}`)
 
     // 1. Analizar intención
     const intent = await this.openaiService.analyzeIntent(text)
@@ -81,7 +81,7 @@ export class WhatsappService {
       this.logger.log(`✅ Mensaje enviado a ${to}`)
     } catch (error) {
        const axiosError = error as AxiosError
-      this.logger.error('❌ Error enviando mensaje:', axiosError.response?.data)
+      this.logger.error('Error enviando mensaje:', axiosError.response?.data)
      
     }
   }
